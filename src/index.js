@@ -1,16 +1,26 @@
+import "./env.js";
 import express from "express";
-import dotenv from "dotenv";
+import session from "express-session";
+import passport from "passport";
 import queueRouter from "./routes/queue.js";
 import authRouter from "./routes/auth.js";
 import adminRouter from "./routes/admin.js";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(express.static("public"));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api/queue", queueRouter);
 app.use("/auth", authRouter);
