@@ -1,0 +1,26 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>IRS WebQ</title>
+  </head>
+
+  <body>
+    <div id="auth"></div>
+    <script>
+      fetch("/auth/status")
+        .then((res) => res.json())
+        .then((data) => {
+          const auth = document.getElementById("auth");
+          if (data.user) {
+            auth.innerHTML = `
+              <p>Logged in as ${data.user.username}</p>
+              <a href="/auth/logout">Logout</a>
+            `;
+          } else {
+            auth.innerHTML = `<a href="/auth/discord">Login with Discord</a>`;
+          }
+        });
+    </script>
+  </body>
+</html>

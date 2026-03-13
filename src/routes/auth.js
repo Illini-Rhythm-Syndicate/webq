@@ -41,4 +41,8 @@ router.get("/logout", (req, res) => {
   req.logout(() => res.redirect("/"));
 });
 
+router.get("/status", (req, res) => {
+  res.json({ user: req.user || null });
+});
+
 export default router;
