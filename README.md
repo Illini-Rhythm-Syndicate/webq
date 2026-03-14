@@ -1,5 +1,7 @@
 # IRS UIUC WebQ
 
+Web-based queue management system for Illini Rhythm Syndicate freeplays.
+
 ## Setup
 
 ```
@@ -8,6 +10,10 @@ cd webq
 npm i
 ```
 
-Create `.env` then copy-paste contents of `.env.example` and populate.
+Create `.env` then copy-paste contents of `.env.example` and populate. Discord Client ID and secret can be obtained from the [Discord Developer Portal](https://discord.com/developers/applications).
 
-`npm run dev` to start app, `npm run css` to hot update styling with Tailwind CLI. Server runs on `http://localhost:3000` by default.
+`npm run css` to generate CSS styling with Tailwind CLI. Keep terminal running for hot updates.
+
+`npm run dev` to start app, server runs on `http://localhost:3000` by default.
+
+Update `src/admins.js` with Discord IDs to grant admin permissions on the app.
