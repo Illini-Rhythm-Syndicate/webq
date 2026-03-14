@@ -21,7 +21,12 @@ router.get("/status", (req, res) => {
 });
 
 router.post("/:id/join", requireAuth, (req, res) => {
-  const result = queueManager.join(req.params.id, req.user);
+  const { notificationsOptIn } = req.body;
+  const result = queueManager.join(
+    req.params.id,
+    req.user,
+    notificationsOptIn || false,
+  );
   if (!result.ok) return res.status(400).json(result);
   res.json(result);
 });
@@ -40,6 +45,20 @@ router.post("/finish", requireAuth, (req, res) => {
   const result = queueManager.finish(req.user.id);
   if (!result.ok) return res.status(400).json(result);
   res.json(result);
+});
+
+router.post("/notifications/optin", requireAuth, (req, res) => {
+  req.session.notificationsOptIn = true;
+  res.json({ ok: true });
+});
+
+router.post("/notifications/optout", requireAuth, (req, res) => {
+  req.session.notificationsOptIn = false;
+  res.json({ ok: true });
+});
+
+router.get("/notifications/status", requireAuth, (req, res) => {
+  res.json({ optedIn: req.session.notificationsOptIn || false });
 });
 
 export default router;

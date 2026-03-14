@@ -1,4 +1,5 @@
 import Queue from "./Queue.js";
+import { sendTurnNotification } from "../bot.js";
 
 const AUTO_POP_MS = 15 * 60 * 1000;
 
@@ -34,14 +35,16 @@ class QueueManager {
     return Array.from(this.queues.values()).map((q) => q.toJSON());
   }
 
-  join(queueId, user) {
+  join(queueId, user, notificationsOptIn = false) {
     if (this.userQueueMap.has(user.id))
       return { ok: false, error: "Already in a queue" };
     const queue = this.queues.get(queueId);
     if (!queue) return { ok: false, error: "Queue not found" };
-    queue.push(user);
+    queue.push({ ...user, notificationsOptIn });
     this.userQueueMap.set(user.id, queueId);
-    if (queue.peek().id === user.id) this._startTimer(user.id, queueId);
+    if (queue.peek().id === user.id) {
+      this._startTimerForFront(queueId);
+    }
     return { ok: true };
   }
 
@@ -80,7 +83,12 @@ class QueueManager {
     const queue = this.queues.get(queueId);
     if (!queue) return;
     const front = queue.peek();
-    if (front) this._startTimer(front.id, queueId);
+    if (front) {
+      if (!front.id.startsWith("walkin_") && front.notificationsOptIn) {
+        sendTurnNotification(front.id, queue.name);
+      }
+      this._startTimer(front.id, queueId);
+    }
   }
 
   _startTimer(userId, queueId) {
