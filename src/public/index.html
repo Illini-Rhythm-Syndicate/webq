@@ -41,20 +41,26 @@
           return;
         }
         document.getElementById("app").innerHTML = `
-                <h2>Available Queues</h2>
-                <ul>
-                  ${queues
-                    .map(
-                      (q) => `
-                    <li>
-                      ${q.name} — ${q.length} in line
-                      <button onclick="joinQueue('${q.id}')">Join</button>
-                    </li>
-                  `,
-                    )
-                    .join("")}
-                </ul>
-              `;
+    <h2>Available Queues</h2>
+    ${queues
+      .map((q) => {
+        const preview = q.members.slice(0, 5);
+        const previewList =
+          preview.length === 0
+            ? "<li>Empty</li>"
+            : preview.map((m, i) => `<li>${m.username}</li>`).join("");
+        const more = q.length > 5 ? `<li>...and ${q.length - 5} more</li>` : "";
+
+        return `
+        <div>
+          <h3>${q.name} — ${q.length} in line</h3>
+          <ol>${previewList}${more}</ol>
+          <button onclick="joinQueue('${q.id}')">Join</button>
+        </div>
+      `;
+      })
+      .join("")}
+  `;
       }
 
       function renderInQueue(status) {
