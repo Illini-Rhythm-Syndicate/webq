@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <title>IRS WebQ — Admin</title>
-    <link href="./styles/output.css" rel="stylesheet" />
+    <link href="/styles/output.css" rel="stylesheet" />
+    <link rel="icon" href="/images/favicon.ico" />
   </head>
 
   <body class="bg-gray-100 min-h-screen">
@@ -94,10 +95,15 @@
         pollInterval = setInterval(poll, 3000);
       }
 
+      let lastQueuesJSON = null;
+
       async function poll() {
         const res = await fetch("/api/admin/queues");
         if (!res.ok) return;
         const queues = await res.json();
+        const json = JSON.stringify(queues);
+        if (json === lastQueuesJSON) return;
+        lastQueuesJSON = json;
         renderQueues(queues);
       }
 
