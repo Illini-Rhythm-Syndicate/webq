@@ -5,13 +5,12 @@ import passport from "passport";
 import queueRouter from "./routes/queue.js";
 import authRouter from "./routes/auth.js";
 import adminRouter from "./routes/admin.js";
-import queueManager from "./queue/QueueManager.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static("src/public"));
+app.use(express.static("public"));
 
 app.use(
   session({
