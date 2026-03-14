@@ -21,7 +21,6 @@ passport.use(
       scope: ["identify"],
     },
     (accessToken, refreshToken, profile, done) => {
-      console.log(profile); // dev
       return done(null, { id: profile.id, username: profile.username });
     },
   ),
@@ -43,18 +42,6 @@ router.get("/logout", (req, res) => {
 
 router.get("/status", (req, res) => {
   res.json({ user: req.user || null });
-});
-
-// dev
-router.get("/testlogin", (req, res) => {
-  const fakeUser = {
-    id: req.query.id || "1",
-    username: req.query.username || "testuser",
-  };
-  req.login(fakeUser, (err) => {
-    if (err) return res.status(500).json({ error: err });
-    res.redirect("/");
-  });
 });
 
 export default router;

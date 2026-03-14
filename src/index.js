@@ -27,11 +27,6 @@ app.use("/api/queue", queueRouter);
 app.use("/auth", authRouter);
 app.use("/api/admin", adminRouter);
 
-// dev
-queueManager.createQueue("Machine 1");
-queueManager.createQueue("Machine 2");
-queueManager.createQueue("Machine 3");
-
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
