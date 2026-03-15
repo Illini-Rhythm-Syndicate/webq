@@ -103,8 +103,8 @@
     <div class="flex items-center gap-3 mb-6">
       <span class="text-sm text-gray-600">Notify me on Discord when it's my turn</span>
       <button onclick="toggleNotifications()"
-        class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${optedIn ? "bg-[#1D4A71]" : "bg-gray-300"}">
-        <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${optedIn ? "translate-x-6" : "translate-x-1"}"></span>
+        style="position:relative;display:inline-flex;height:1.5rem;width:2.75rem;align-items:center;border-radius:9999px;transition:background-color 0.2s;background-color:${optedIn ? "#1D4A71" : "#D1D5DB"};border:none;cursor:pointer;">
+        <span style="display:inline-block;height:1rem;width:1rem;transform:translateX(${optedIn ? "1.5rem" : "0.25rem"});border-radius:9999px;background-color:white;transition:transform 0.2s;"></span>
       </button>
       <span class="text-xs text-gray-400">${optedIn ? "On" : "Off"}</span>
     </div>
