@@ -69,6 +69,18 @@ class QueueManager {
     if (!queueId) return { inQueue: false };
     const queue = this.queues.get(queueId);
     const position = queue.getPosition(userId);
+
+    const front = queue.peek();
+    let frontRemainingMs = 12 * 60 * 1000;
+    if (front && this.timers.has(front.id)) {
+      const { startedAt } = this.timers.get(front.id);
+      const elapsed = Date.now() - startedAt;
+      frontRemainingMs = Math.max(0, 12 * 60 * 1000 - elapsed);
+    }
+
+    const estimatedWaitMs =
+      position === 0 ? 0 : frontRemainingMs + (position - 1) * 12 * 60 * 1000;
+
     return {
       inQueue: true,
       queueId,
@@ -76,6 +88,7 @@ class QueueManager {
       position,
       isMyTurn: position === 0,
       members: queue.members.map((m) => ({ id: m.id, username: m.username })),
+      estimatedWaitMs,
     };
   }
 
@@ -93,16 +106,17 @@ class QueueManager {
 
   _startTimer(userId, queueId) {
     this._clearTimer(userId);
+    const startedAt = Date.now();
     const handle = setTimeout(() => {
       console.log(`Auto-popping ${userId} from queue ${queueId} after 15 min`);
       this.leave(userId);
     }, AUTO_POP_MS);
-    this.timers.set(userId, handle);
+    this.timers.set(userId, { handle, startedAt });
   }
 
   _clearTimer(userId) {
     if (this.timers.has(userId)) {
-      clearTimeout(this.timers.get(userId));
+      clearTimeout(this.timers.get(userId).handle);
       this.timers.delete(userId);
     }
   }
