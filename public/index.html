@@ -58,36 +58,36 @@
                 .classList.remove("hidden");
           });
           authArea.innerHTML = `
-            <button
-              class="flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg font-medium text-base"
-              onclick="this.parentElement.querySelector('.dropdown-menu').classList.toggle('hidden')"
-            >
-              <span>${data.user.username}</span>
-              <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-            <div class="dropdown-menu hidden absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden z-10">
-              <a href="/auth/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">Logout</a>
-            </div>
-          `;
+                  <button
+                    class="flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg font-medium text-base"
+                    onclick="this.parentElement.querySelector('.dropdown-menu').classList.toggle('hidden')"
+                  >
+                    <span>${data.user.username}</span>
+                    <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div class="dropdown-menu hidden absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden z-10">
+                    <a href="/auth/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">Logout</a>
+                  </div>
+                `;
 
           startPolling();
         } else {
           authArea.innerHTML = `
-            <a href="/auth/discord" class="bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg font-medium text-base">
-              Login with Discord
-            </a>
-          `;
+                  <a href="/auth/discord" class="bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg font-medium text-base">
+                    Login with Discord
+                  </a>
+                `;
           document.getElementById("app").innerHTML = `
-            <div class="text-center py-24">
-              <h2 class="text-2xl font-bold text-gray-700 mb-2">Welcome to IRS WebQ</h2>
-              <p class="text-gray-500 mb-6">Log in with Discord to join a queue.</p>
-              <a href="/auth/discord" class="inline-block bg-[#1D4A71] hover:bg-[#163a59] text-white font-semibold px-6 py-3 rounded-lg transition-colors">
-                Login with Discord
-              </a>
-            </div>
-          `;
+                  <div class="text-center py-24">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-2">Welcome to IRS WebQ</h2>
+                    <p class="text-gray-500 mb-6">Log in with Discord to join a queue.</p>
+                    <a href="/auth/discord" class="inline-block bg-[#1D4A71] hover:bg-[#163a59] text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+                      Login with Discord
+                    </a>
+                  </div>
+                `;
         }
       }
 
@@ -100,15 +100,15 @@
       function renderNotificationToggle() {
         const optedIn = getNotifPreference();
         return `
-    <div class="flex items-center gap-3 mb-6">
-      <span class="text-sm text-gray-600">Notify me on Discord when it's my turn</span>
-      <button onclick="toggleNotifications()"
-        style="position:relative;display:inline-flex;height:1.5rem;width:2.75rem;align-items:center;border-radius:9999px;transition:background-color 0.2s;background-color:${optedIn ? "#1D4A71" : "#D1D5DB"};border:none;cursor:pointer;">
-        <span style="display:inline-block;height:1rem;width:1rem;transform:translateX(${optedIn ? "1.5rem" : "0.25rem"});border-radius:9999px;background-color:white;transition:transform 0.2s;"></span>
-      </button>
-      <span class="text-xs text-gray-400">${optedIn ? "On" : "Off"}</span>
-    </div>
-  `;
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-sm text-gray-600">Notify me on Discord when it's my turn</span>
+            <button onclick="toggleNotifications()"
+              style="position:relative;display:inline-flex;height:1.5rem;width:2.75rem;align-items:center;border-radius:9999px;transition:background-color 0.2s;background-color:${optedIn ? "#1D4A71" : "#D1D5DB"};border:none;cursor:pointer;">
+              <span style="display:inline-block;height:1rem;width:1rem;transform:translateX(${optedIn ? "1.5rem" : "0.25rem"});border-radius:9999px;background-color:white;transition:transform 0.2s;"></span>
+            </button>
+            <span class="text-xs text-gray-400">${optedIn ? "On" : "Off"}</span>
+          </div>
+        `;
       }
 
       function renderQueueList(queues) {
@@ -118,80 +118,54 @@
           return;
         }
         document.getElementById("app").innerHTML = `
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Available Queues</h2>
-    ${renderNotificationToggle()}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      ${queues
-        .map((q) => {
-          const preview = q.members.slice(0, 5);
-          const previewList =
-            preview.length === 0
-              ? `<p class="text-gray-400 text-sm italic">Empty</p>`
-              : preview
-                  .map(
-                    (m, i) => `
-              <div class="flex items-center gap-2 text-sm text-gray-600">
-                <span class="text-gray-400 w-4">${i + 1}.</span>
-                <span>${m.username}</span>
-              </div>
-            `,
-                  )
-                  .join("");
-          const more =
-            q.length > 5
-              ? `<p class="text-xs text-gray-400 mt-1">+${q.length - 5} more</p>`
-              : "";
-          return `
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col gap-4">
-              <div class="flex items-start justify-between">
-                <h3 class="font-semibold text-gray-800 text-lg">${q.name}</h3>
-                <span class="text-xs font-medium bg-[#1D4A71]/10 text-[#1D4A71] px-2 py-1 rounded-full">${q.length} in line</span>
-              </div>
-              <div class="flex flex-col gap-1">${previewList}${more}</div>
-              <button onclick="joinQueue('${q.id}')"
-                class="mt-auto w-full bg-[#1D4A71] hover:bg-[#163a59] text-white font-medium py-2 rounded-lg transition-colors">
-                Join Queue
-              </button>
-            </div>
-          `;
-        })
-        .join("")}
-    </div>
-  `;
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Available Queues</h2>
+          ${renderNotificationToggle()}
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            ${queues
+              .map((q) => {
+                const preview = q.members.slice(0, 5);
+                const previewList =
+                  preview.length === 0
+                    ? `<p class="text-gray-400 text-sm italic">Empty</p>`
+                    : preview
+                        .map(
+                          (m, i) => `
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                      <span class="text-gray-400 w-4">${i + 1}.</span>
+                      <span>${m.username}</span>
+                    </div>
+                  `,
+                        )
+                        .join("");
+                const more =
+                  q.length > 5
+                    ? `<p class="text-xs text-gray-400 mt-1">+${q.length - 5} more</p>`
+                    : "";
+                return `
+                  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col gap-4">
+                    <div class="flex items-start justify-between">
+                      <h3 class="font-semibold text-gray-800 text-lg">${q.name}</h3>
+                      <span class="text-xs font-medium bg-[#1D4A71]/10 text-[#1D4A71] px-2 py-1 rounded-full">${q.length} in line</span>
+                    </div>
+                    <div class="flex flex-col gap-1">${previewList}${more}</div>
+                    <button onclick="joinQueue('${q.id}')"
+                      class="mt-auto w-full bg-[#1D4A71] hover:bg-[#163a59] text-white font-medium py-2 rounded-lg transition-colors">
+                      Join Queue
+                    </button>
+                  </div>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
       }
 
       function renderInQueue(status) {
         const membersList = status.members
           .map(
             (m, i) => `
-      <div class="flex items-center gap-2 text-sm py-1" style="${m.id === currentUser.id ? "font-weight:600;color:#1D4A71" : "color:#4B5563"}">
-        <span style="color:#9CA3AF;width:1rem">${i + 1}.</span>
-        <span>${m.username}${m.id === currentUser.id ? " (you)" : ""}</span>
-      </div>
-    `,
-          )
-          .join("");
-
-        document.getElementById("app").innerHTML = `
-    <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h2 class="text-xl font-bold text-gray-800 mb-1">${status.queueName}</h2>
-      <p class="text-[#1D4A71] font-semibold mb-4">You are #${status.position + 1} in line</p>
-      <div class="flex flex-col mb-6">${membersList}</div>
-      ${renderNotificationToggle()}
-      <button onclick="leaveQueue()"
-        class="w-full border border-red-300 text-red-500 hover:bg-red-50 font-medium py-2 rounded-lg transition-colors">
-        Leave Queue
-      </button>
-    </div>
-  `;
-      }
-
-      function renderMyTurn(status) {
-        const membersList = status.members
-          .map(
-            (m, i) => `
-          <div class="flex items-center gap-2 text-sm py-1 ${m.id === currentUser.id ? "font-semibold text-[#1D4A71]" : "text-gray-600"}">
-            <span class="text-gray-400 w-4">${i + 1}.</span>
+          <div class="flex items-center gap-2 text-sm py-1" style="${m.id === currentUser.id ? "font-weight:600;color:#1D4A71" : "color:#4B5563"}">
+            <span style="color:#9CA3AF;width:1rem">${i + 1}.</span>
             <span>${m.username}${m.id === currentUser.id ? " (you)" : ""}</span>
           </div>
         `,
@@ -199,18 +173,47 @@
           .join("");
 
         document.getElementById("app").innerHTML = `
-          <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border-2 border-[#1D4A71] p-6">
-            <div class="bg-[#1D4A71]/10 text-[#1D4A71] text-center font-bold text-lg rounded-lg py-3 mb-4">
-              It's your turn!
-            </div>
-            <h2 class="text-xl font-bold text-gray-800 mb-4">${status.queueName}</h2>
+          <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-1">${status.queueName}</h2>
+            <p class="text-[#1D4A71] font-semibold mb-1">You are #${status.position + 1} in line</p>
+            <p class="text-gray-400 text-sm mb-4">Estimated wait: <span id="countdown">calculating...</span></p>
             <div class="flex flex-col mb-6">${membersList}</div>
-            <button onclick="finish()"
-              class="w-full bg-[#1D4A71] hover:bg-[#163a59] text-white font-semibold py-2 rounded-lg transition-colors">
-              I'm done playing
+            ${renderNotificationToggle()}
+            <button onclick="leaveQueue()"
+              class="w-full border border-red-300 text-red-500 hover:bg-red-50 font-medium py-2 rounded-lg transition-colors">
+              Leave Queue
             </button>
           </div>
         `;
+
+        startCountdown(status.estimatedWaitMs);
+      }
+
+      function renderMyTurn(status) {
+        const membersList = status.members
+          .map(
+            (m, i) => `
+                <div class="flex items-center gap-2 text-sm py-1 ${m.id === currentUser.id ? "font-semibold text-[#1D4A71]" : "text-gray-600"}">
+                  <span class="text-gray-400 w-4">${i + 1}.</span>
+                  <span>${m.username}${m.id === currentUser.id ? " (you)" : ""}</span>
+                </div>
+              `,
+          )
+          .join("");
+
+        document.getElementById("app").innerHTML = `
+                <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border-2 border-[#1D4A71] p-6">
+                  <div class="bg-[#1D4A71]/10 text-[#1D4A71] text-center font-bold text-lg rounded-lg py-3 mb-4">
+                    It's your turn!
+                  </div>
+                  <h2 class="text-xl font-bold text-gray-800 mb-4">${status.queueName}</h2>
+                  <div class="flex flex-col mb-6">${membersList}</div>
+                  <button onclick="finish()"
+                    class="w-full bg-[#1D4A71] hover:bg-[#163a59] text-white font-semibold py-2 rounded-lg transition-colors">
+                    I'm done playing
+                  </button>
+                </div>
+              `;
       }
 
       async function joinQueue(queueId) {
@@ -271,6 +274,33 @@
         const current = getNotifPreference();
         setNotifPreference(!current);
         poll();
+      }
+
+      let countdownInterval = null;
+      let countdownEnd = null;
+
+      function startCountdown(estimatedWaitMs) {
+        if (countdownInterval) clearInterval(countdownInterval);
+        countdownEnd = Date.now() + estimatedWaitMs;
+
+        function tick() {
+          const el = document.getElementById("countdown");
+          if (!el) {
+            clearInterval(countdownInterval);
+            return;
+          }
+          const remaining = countdownEnd - Date.now();
+          if (remaining <= 0) {
+            el.textContent = "Any moment now...";
+            clearInterval(countdownInterval);
+            return;
+          }
+          const mins = Math.ceil(remaining / 60000);
+          el.textContent = `~${mins} ${mins === 1 ? "minute" : "minutes"}`;
+        }
+
+        tick();
+        countdownInterval = setInterval(tick, 60000);
       }
 
       loadAuth();
