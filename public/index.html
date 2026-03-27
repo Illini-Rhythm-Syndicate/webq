@@ -160,60 +160,152 @@
         `;
       }
 
-      function renderInQueue(status) {
+      async function renderInQueue(status) {
         const membersList = status.members
           .map(
             (m, i) => `
-          <div class="flex items-center gap-2 text-sm py-1" style="${m.id === currentUser.id ? "font-weight:600;color:#1D4A71" : "color:#4B5563"}">
-            <span style="color:#9CA3AF;width:1rem">${i + 1}.</span>
-            <span>${m.username}${m.id === currentUser.id ? " (you)" : ""}</span>
-          </div>
-        `,
+    <div class="flex items-center gap-2 text-sm py-1" style="${m.id === currentUser.id ? "font-weight:600;color:#1D4A71" : "color:#4B5563"}">
+      <span style="color:#9CA3AF;width:1rem">${i + 1}.</span>
+      <span>${m.username}${m.id === currentUser.id ? " (you)" : ""}</span>
+    </div>
+  `,
           )
           .join("");
 
-        document.getElementById("app").innerHTML = `
-          <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-1">${status.queueName}</h2>
-            <p class="text-[#1D4A71] font-semibold mb-1">You are #${status.position + 1} in line</p>
-            <p class="text-gray-400 text-sm mb-4">Estimated wait: <span id="countdown">calculating...</span></p>
-            <div class="flex flex-col mb-6">${membersList}</div>
-            ${renderNotificationToggle()}
-            <button onclick="leaveQueue()"
-              class="w-full border border-red-300 text-red-500 hover:bg-red-50 font-medium py-2 rounded-lg transition-colors">
-              Leave Queue
-            </button>
+        const queuesRes = await fetch("/api/queue");
+        const queues = await queuesRes.json();
+        const otherQueues = queues.filter((q) => q.id !== status.queueId);
+        const otherQueuesHTML =
+          otherQueues.length === 0
+            ? ""
+            : `
+    <h2 class="text-xl font-bold text-gray-800 mb-4 mt-8">Other Queues</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      ${otherQueues
+        .map((q) => {
+          const preview = q.members.slice(0, 5);
+          const previewList =
+            preview.length === 0
+              ? `<p class="text-gray-400 text-sm italic">Empty</p>`
+              : preview
+                  .map(
+                    (m, i) => `
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <span class="text-gray-400 w-4">${i + 1}.</span>
+                <span>${m.username}</span>
+              </div>
+            `,
+                  )
+                  .join("");
+          const more =
+            q.length > 5
+              ? `<p class="text-xs text-gray-400 mt-1">+${q.length - 5} more</p>`
+              : "";
+          return `
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col gap-4">
+            <div class="flex items-start justify-between">
+              <h3 class="font-semibold text-gray-800 text-lg">${q.name}</h3>
+              <span class="text-xs font-medium bg-[#1D4A71]/10 text-[#1D4A71] px-2 py-1 rounded-full">${q.length} in line</span>
+            </div>
+            <div class="flex flex-col gap-1">${previewList}${more}</div>
           </div>
         `;
+        })
+        .join("")}
+    </div>
+  `;
+
+        document.getElementById("app").innerHTML = `
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">${status.queueName}</h2>
+      <p class="text-[#1D4A71] font-semibold mb-1">You are #${status.position + 1} in line</p>
+      <p class="text-gray-400 text-sm mb-4">Estimated wait: <span id="countdown">calculating...</span></p>
+      <div class="flex flex-col mb-6">${membersList}</div>
+      ${renderNotificationToggle()}
+      <button onclick="leaveQueue()"
+        class="w-full border border-red-300 text-red-500 hover:bg-red-50 font-medium py-2 rounded-lg transition-colors">
+        Leave Queue
+      </button>
+    </div>
+    ${otherQueuesHTML}
+  `;
 
         startCountdown(status.estimatedWaitMs);
       }
 
-      function renderMyTurn(status) {
+      async function renderMyTurn(status) {
         const membersList = status.members
           .map(
             (m, i) => `
-                <div class="flex items-center gap-2 text-sm py-1 ${m.id === currentUser.id ? "font-semibold text-[#1D4A71]" : "text-gray-600"}">
-                  <span class="text-gray-400 w-4">${i + 1}.</span>
-                  <span>${m.username}${m.id === currentUser.id ? " (you)" : ""}</span>
-                </div>
-              `,
+        <div class="flex items-center gap-2 text-sm py-1 ${
+          m.id === currentUser.id
+            ? "font-semibold text-[#1D4A71]"
+            : "text-gray-600"
+        }">
+          <span class="text-gray-400 w-4">${i + 1}.</span>
+          <span>${m.username}${m.id === currentUser.id ? " (you)" : ""}</span>
+        </div>
+      `,
           )
           .join("");
 
+        const queuesRes = await fetch("/api/queue");
+        const queues = await queuesRes.json();
+        const otherQueues = queues.filter((q) => q.id !== status.queueId);
+        const otherQueuesHTML =
+          otherQueues.length === 0
+            ? ""
+            : `
+    <h2 class="text-xl font-bold text-gray-800 mb-4 mt-8">Other Queues</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      ${otherQueues
+        .map((q) => {
+          const preview = q.members.slice(0, 5);
+          const previewList =
+            preview.length === 0
+              ? `<p class="text-gray-400 text-sm italic">Empty</p>`
+              : preview
+                  .map(
+                    (m, i) => `
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <span class="text-gray-400 w-4">${i + 1}.</span>
+                <span>${m.username}</span>
+              </div>
+            `,
+                  )
+                  .join("");
+          const more =
+            q.length > 5
+              ? `<p class="text-xs text-gray-400 mt-1">+${q.length - 5} more</p>`
+              : "";
+          return `
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col gap-4">
+            <div class="flex items-start justify-between">
+              <h3 class="font-semibold text-gray-800 text-lg">${q.name}</h3>
+              <span class="text-xs font-medium bg-[#1D4A71]/10 text-[#1D4A71] px-2 py-1 rounded-full">${q.length} in line</span>
+            </div>
+            <div class="flex flex-col gap-1">${previewList}${more}</div>
+          </div>
+        `;
+        })
+        .join("")}
+    </div>
+  `;
+
         document.getElementById("app").innerHTML = `
-                <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border-2 border-[#1D4A71] p-6">
-                  <div class="bg-[#1D4A71]/10 text-[#1D4A71] text-center font-bold text-lg rounded-lg py-3 mb-4">
-                    It's your turn!
-                  </div>
-                  <h2 class="text-xl font-bold text-gray-800 mb-4">${status.queueName}</h2>
-                  <div class="flex flex-col mb-6">${membersList}</div>
-                  <button onclick="finish()"
-                    class="w-full bg-[#1D4A71] hover:bg-[#163a59] text-white font-semibold py-2 rounded-lg transition-colors">
-                    I'm done playing
-                  </button>
-                </div>
-              `;
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border-2 border-[#1D4A71] p-6">
+      <div class="bg-[#1D4A71]/10 text-[#1D4A71] text-center font-bold text-lg rounded-lg py-3 mb-4">
+        It's your turn!
+      </div>
+      <h2 class="text-xl font-bold text-gray-800 mb-4">${status.queueName}</h2>
+      <div class="flex flex-col mb-6">${membersList}</div>
+      <button onclick="finish()"
+        class="w-full bg-[#1D4A71] hover:bg-[#163a59] text-white font-semibold py-2 rounded-lg transition-colors">
+        I'm done playing
+      </button>
+    </div>
+    ${otherQueuesHTML}
+  `;
       }
 
       async function joinQueue(queueId) {
